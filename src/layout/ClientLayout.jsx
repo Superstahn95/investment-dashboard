@@ -3,6 +3,8 @@ import { Outlet, Link } from "react-router-dom";
 import { Transition } from "@headlessui/react";
 import TopBar from "../components/TopBar";
 import SideBar from "../components/SideBar";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   HomeIcon,
   CreditCardIcon,
@@ -15,6 +17,8 @@ import {
 } from "@heroicons/react/24/solid";
 
 function ClientLayout() {
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const [showNav, setShowNav] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   function handleResize() {
@@ -27,6 +31,11 @@ function ClientLayout() {
     }
   }
   useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [navigate, user]);
+  useEffect(() => {
     if (typeof window != undefined) {
       addEventListener("resize", handleResize);
     }
@@ -35,31 +44,35 @@ function ClientLayout() {
     };
   }, []);
   const clientLinks = [
-    { link: "Dashboard", icon: <HomeIcon className="h-5 w-5" />, to: "/" },
+    {
+      link: "Dashboard",
+      icon: <HomeIcon className="h-5 w-5" />,
+      to: "/dashboard",
+    },
     {
       link: "Deposit",
       icon: <ArrowDownTrayIcon className="h-5 w-5" />,
-      to: "/deposit",
+      to: "/dashboard/deposit",
     },
     {
       link: "Withdraw",
       icon: <ArrowUpTrayIcon className="h-5 w-5" />,
-      to: "/withdrawal",
+      to: "/dashboard/withdrawal",
     },
     {
       link: "Invest Funds",
       icon: <CircleStackIcon className="h-5 w-5" />,
-      to: "/buy-plan",
+      to: "/dashboard/buy-plan",
     },
     {
       link: "Transactions",
       icon: <CreditCardIcon className="h-5 w-5" />,
-      to: "/transactions",
+      to: "/dashboard/transactions",
     },
     {
       link: "Profile",
       icon: <IdentificationIcon className="h-5 w-5" />,
-      to: "/profile",
+      to: "/dashboard/profile",
     },
   ];
   return (

@@ -1,13 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DepositForm from "../../components/Client/DepositForm";
 import { paymentMethods } from "../../assets/data";
 import WalletDetails from "../../components/Client/WalletDetails";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { makeDeposit, reset } from "../../features/deposits/depositSlice";
+import OverlayLoaderComponent from "../../components/OverlayLoaderComponent";
+import { ToastContainer, toast } from "react-toastify";
+import toastifyConfig from "../../utils/toastify";
 
 function Deposit() {
   const [amount, setAmount] = useState(null);
+  const [receipt, setReceipt] = useState(null);
   const [selected, setSelected] = useState(paymentMethods[0]);
   const [showWalletDetails, setShowWalletDetails] = useState(false);
+  const dispatch = useDispatch();
+  const {
+    depositIsLoading,
+    depositIsSuccess,
+    depositIsError,
+    depositSuccessMessage,
+    depositErrorMessage,
+  } = useSelector((state) => state.deposit);
+  const handleDeposit = () => {
+    const formData = new FormData();
+    formData.append("receipt", receipt);
+    formData.append("amount", amount);
+    dispatch(makeDeposit(formData));
+  };
   const proceedToPayment = () => {
     if (amount && selected) {
       setShowWalletDetails(true);
@@ -15,6 +35,21 @@ function Deposit() {
       alert("Enter an amount");
     }
   };
+  useEffect(() => {
+    if (depositIsError) {
+      //i'll be handling this in a better way
+      toast.error(depositErrorMessage, toastifyConfig);
+    }
+    if (depositIsSuccess || depositSuccessMessage) {
+      toast.success(depositSuccessMessage, toastifyConfig);
+    }
+    dispatch(reset());
+  }, [
+    depositIsError,
+    depositIsSuccess,
+    depositSuccessMessage,
+    depositErrorMessage,
+  ]);
   console.log(showWalletDetails, amount, selected);
   return (
     <>
@@ -24,7 +59,13 @@ function Deposit() {
       {/* form content or something like that */}
       <div className="grid grid-cols-4 gap-2 bg-white shadow-sm dark:bg-slate-800 font-montserrat">
         {showWalletDetails ? (
-          <WalletDetails selected={selected} amount={amount} />
+          <WalletDetails
+            selected={selected}
+            amount={amount}
+            receipt={receipt}
+            setReceipt={setReceipt}
+            handleDeposit={handleDeposit}
+          />
         ) : (
           <DepositForm
             amount={amount}
@@ -52,6 +93,8 @@ function Deposit() {
           </div>
         </div>
       </div>
+      {depositIsLoading && <OverlayLoaderComponent />}
+      <ToastContainer />
     </>
   );
 }

@@ -1,20 +1,26 @@
 import { Fragment } from "react";
 import {
   Bars3CenterLeftIcon,
-  PencilIcon,
+  UserIcon,
+  ArrowLeftOnRectangleIcon,
   ChevronDownIcon,
   CreditCardIcon,
-  Cog8ToothIcon,
   SunIcon,
   MoonIcon,
 } from "@heroicons/react/24/solid";
 import { Menu, Transition } from "@headlessui/react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../features/auth/authSlice";
 
 function TopBar({ showNav, setShowNav }) {
   const { setTheme, theme } = useTheme();
-
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const handleLogout = () => {
+    dispatch(logout());
+  };
   return (
     <div
       className={`fixed bg-gray-200 dark:bg-slate-900  w-full h-16 flex justify-between items-center transition-all duruation-[400ms] ${
@@ -45,8 +51,8 @@ function TopBar({ showNav, setShowNav }) {
                     alt=""
                   />
                 </div>
-                <span className="hidden md:block font-medium text-gray-700">
-                  Rettson
+                <span className="hidden md:block font-medium text-gray-700 dark:text-white ">
+                  {user?.name}
                 </span>
                 <ChevronDownIcon className="ml-2 h-4 w-4 text-gray-700" />
               </Menu.Button>
@@ -67,11 +73,11 @@ function TopBar({ showNav, setShowNav }) {
                       href="#"
                       className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
                     >
-                      <PencilIcon className="h-4 w-4 mr-2" />
-                      Edit
+                      <UserIcon className="h-4 w-4 mr-2" />
+                      Profile
                     </Link>
                   </Menu.Item>
-                  <Menu.Item>
+                  {/* <Menu.Item>
                     <Link
                       href="#"
                       className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
@@ -79,14 +85,14 @@ function TopBar({ showNav, setShowNav }) {
                       <CreditCardIcon className="h-4 w-4 mr-2" />
                       Billing
                     </Link>
-                  </Menu.Item>
+                  </Menu.Item> */}
                   <Menu.Item>
                     <Link
-                      href="#"
+                      onClick={handleLogout}
                       className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
                     >
-                      <Cog8ToothIcon className="h-4 w-4 mr-2" />
-                      Settings
+                      <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
+                      Logout
                     </Link>
                   </Menu.Item>
                 </div>

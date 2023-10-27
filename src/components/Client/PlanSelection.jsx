@@ -8,6 +8,7 @@ function PlanSelection({
   setInvestmentAmount,
 }) {
   console.log(plan);
+  console.log(plans);
   const quickAmounts = [300, 500, 1000, 1500, 2000];
   const handleClick = (number) => {
     setInvestmentAmount(number);
@@ -24,7 +25,7 @@ function PlanSelection({
             onChange={(e) => setPlan(e.target.value)}
           >
             {plans.map((plan) => (
-              <option key={plan.id} value={plan.id}>
+              <option key={plan._id} value={plan._id}>
                 {plan.name}
               </option>
             ))}

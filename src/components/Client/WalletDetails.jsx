@@ -2,8 +2,13 @@ import {
   ClipboardDocumentIcon,
   ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/solid";
-function WalletDetails({ selected, amount }) {
-  console.log(selected.walletAddress);
+function WalletDetails({
+  selected,
+  amount,
+  receipt,
+  setReceipt,
+  handleDeposit,
+}) {
   const copyWalletAddress = async () => {
     try {
       await navigator.clipboard.writeText(selected.walletAddress);
@@ -12,6 +17,11 @@ function WalletDetails({ selected, amount }) {
       alert("unable to copy to clipb");
     }
   };
+  const handleFileChange = (e) => {
+    setReceipt(e.target.files[0]);
+  };
+  console.log(receipt);
+
   return (
     <div className="col-span-4 md:col-span-3 py-3 px-5">
       <div className="w-full bg-orange-300 rounded-2xl p-2 flex space-x-2 items-center font-montserrat">
@@ -65,14 +75,23 @@ function WalletDetails({ selected, amount }) {
           </p>
           <div className="py-2">
             <input
+              onChange={handleFileChange}
+              accept="image/*"
               type="file"
+              name="receipt"
               className="w-full border border-gray-500 outline-none rounded-md  p-2 text-gray-500 dark:text-white dark:bg-slate-900 dark:border-white"
             />
           </div>
         </div>
         {/* submit button */}
         <div className="my-4 ">
-          <button className="bg-orange-500 text-white w-full px-2 py-3 rounded-r-md rounded-tl-md">
+          <button
+            onClick={handleDeposit}
+            disabled={receipt ? false : true}
+            className={`${
+              receipt ? "bg-orange-500 cursor-pointer" : "bg-gray-500"
+            }  text-white w-full px-2 py-3 rounded-r-md rounded-tl-md `}
+          >
             Submit Payment
           </button>
         </div>

@@ -1,45 +1,38 @@
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Router,
-  Route,
-  RouterProvider,
-} from "react-router-dom";
-import AdminLayout from "./layout/AdminLayout";
-import ClientLayout from "./layout/ClientLayout";
-import Dashboard from "./pages/Dashboard";
-import Users from "./pages/Admin/Users";
-import User from "./pages/Admin/User";
-import Plans from "./pages/Admin/Plans";
-import CreatePlan from "./pages/Admin/CreatePlan";
-import UpdatePlan from "./pages/Admin/UpdatePlan";
-import Deposits from "./pages/Admin/Deposits";
-import Deposit from "./pages/Client/Deposit";
-import Invest from "./pages/Client/Invest";
-
-const userRole = "client";
-
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route
-      path="/"
-      element={userRole === "admin" ? <AdminLayout /> : <ClientLayout />}
-    >
-      <Route index element={<Dashboard />} />
-      <Route path="users" element={<Users />} />
-      <Route path="users/:id" element={<User />} />
-      <Route path="plans" element={<Plans />} />
-      <Route path="plans/create-plan" element={<CreatePlan />} />
-      <Route path="plans/:id" element={<UpdatePlan />} />
-      <Route path="deposits" element={<Deposits />} />
-      <Route path="deposit" element={<Deposit />} />
-      <Route path="buy-plan" element={<Invest />} />
-    </Route>
-  )
-);
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { reAuthenticate } from "./features/auth/authSlice";
+import "react-toastify/dist/ReactToastify.css";
+import Routing from "./Routes/Routing";
+import OverlayLoaderComponent from "./components/OverlayLoaderComponent";
+import { useEffect, useState } from "react";
 
 function App() {
-  return <RouterProvider router={router} />;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [appLoading, setAppLoading] = useState(true);
+  const { isLoading } = useSelector((state) => state.auth);
+  useEffect(() => {
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      dispatch(reAuthenticate(token))
+        .then(() => {
+          navigate("/dashboard");
+          setAppLoading(false);
+        })
+        .catch((error) => {
+          navigate("/login");
+          setAppLoading(false);
+        });
+    } else {
+      navigate("/login");
+      setAppLoading(false);
+    }
+  }, []);
+  if (appLoading) {
+    return <OverlayLoaderComponent />;
+  }
+
+  return <Routing />;
 }
 
 export default App;

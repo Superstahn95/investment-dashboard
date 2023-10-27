@@ -1,4 +1,5 @@
 import ContentWrapper from "../ContentWrapper";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   BanknotesIcon,
@@ -10,10 +11,15 @@ import {
 } from "@heroicons/react/24/solid";
 
 function ClientDashboardHome() {
+  const { user, isSuccess, isLoading, isError, message } = useSelector(
+    (state) => state.auth
+  );
+  console.log(user);
+  console.log(isSuccess);
   const widgets = [
     {
       title: "Account Balance",
-      amount: 0,
+      amount: user?.approvedBalance,
       icon: <CurrencyDollarIcon className="text-white h-10 w-10" />,
       iconBgColor: "bg-orange-500",
     },
@@ -25,7 +31,7 @@ function ClientDashboardHome() {
     },
     {
       title: "Total Deposit",
-      amount: 0,
+      amount: user?.totalDeposit,
       icon: <ArrowDownIcon className="text-white h-10 w-10" />,
       iconBgColor: "bg-blue-500",
     },
@@ -43,7 +49,7 @@ function ClientDashboardHome() {
     },
     {
       title: "Inv. Funds And Returns",
-      amount: 0,
+      amount: user?.investedFundsAndReturns,
       icon: <CreditCardIcon className="text-white h-10 w-10" />,
       iconBgColor: "bg-purple-500",
     },
@@ -52,7 +58,8 @@ function ClientDashboardHome() {
     <>
       {/* this user should be replaced with the name of the logged in user */}
       <h1 className="text-gray-700 text-3xl mb-16 font-bold dark:text-white">
-        Welcome User
+        {/* was user before */}
+        Welcome {user?.name}
       </h1>
       <h2 className="text-gray-700 text-xl mb-4 font-bold dark:text-white">
         Account Summary
@@ -73,7 +80,7 @@ function ClientDashboardHome() {
         Active Plans
       </h2>
       {/* Existing plan div */}
-      <div className="grid col-1 bg-white h-64 shadow-sm dark:bg-slate-800  mb-16">
+      <div className="grid  bg-white h-64 shadow-sm dark:bg-slate-800  mb-16">
         <div className="flex flex-col items-center justify-center space-y-2">
           <p className="dark:text-white">
             You do not have an active investment plan

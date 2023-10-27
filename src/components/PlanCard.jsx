@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { PencilIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
-function PlanCard({ plan }) {
+function PlanCard({ plan, handleDelete }) {
   const {
-    id,
+    _id,
     name,
     minimumPrice,
     maximumPrice,
@@ -11,8 +11,11 @@ function PlanCard({ plan }) {
     duration,
     giftBonus,
   } = plan;
+  const handleClick = () => {
+    handleDelete(_id);
+  };
   return (
-    <div className="bg-white text-gray-700 py-4 px-6 rounded-md shadow-md dark:bg-slate-800 dark:text-white">
+    <div className="bg-white text-gray-700 py-4 px-6 rounded-md shadow-md dark:bg-slate-800 dark:text-white font-montserrat">
       <h2 className="text-2xl py-3 uppercase">{name}</h2>
       <p className="text-center  text-orange-500">
         $<span className="text-5xl ">{minimumPrice}</span>
@@ -44,12 +47,15 @@ function PlanCard({ plan }) {
 
       <div className="flex items-center justify-center space-x-2">
         <Link
-          to={`/plans/${id}`}
+          to={`/dashboard/plans/${_id}`}
           className="rounded-r-md rounded-tl-md p-3 font-bold bg-blue-500"
         >
           <PencilIcon className="h-4 w-4 text-white" />
         </Link>
-        <Link className="rounded-r-md rounded-tl-md p-3 font-bold bg-red-500">
+        <Link
+          onClick={handleClick}
+          className="rounded-r-md rounded-tl-md p-3 font-bold bg-red-500"
+        >
           <XMarkIcon className="h-4 w-4 text-white " />
         </Link>
       </div>

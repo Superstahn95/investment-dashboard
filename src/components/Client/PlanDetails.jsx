@@ -1,11 +1,16 @@
 import React from "react";
 import { useEffect, useState } from "react";
 
-function PlanDetails({ selectedPlan, plans, amount }) {
+function PlanDetails({ selectedPlan, plans, amount, handleInvesmentClick }) {
+  //when this component mounts, i think we should be fetching the plan with the selected plan value
+  //since we have plans in redux store, we can actually filter
   console.log(selectedPlan);
+  console.log(plans);
+  console.log(amount);
   const [currentPlan, setCurrentPlan] = useState([]);
   const filterPlan = () => {
-    setCurrentPlan(plans.filter((plan) => plan.id === parseInt(selectedPlan)));
+    console.log("filtering");
+    setCurrentPlan(plans.filter((plan) => plan._id === selectedPlan));
   };
   console.log(currentPlan);
   useEffect(() => {
@@ -72,12 +77,17 @@ function PlanDetails({ selectedPlan, plans, amount }) {
           {" "}
           Amount to invest
         </span>
-        <span className="capitalize text-lg  font-bold text-orange-500">
-          ${amount}
-        </span>
+        {amount && (
+          <span className="capitalize text-lg  font-bold text-orange-500">
+            ${amount}
+          </span>
+        )}
       </div>
       <div>
-        <button className="bg-orange-500 text-white w-full px-2 py-3 rounded-r-md rounded-tl-md">
+        <button
+          onClick={handleInvesmentClick}
+          className="bg-orange-500 text-white w-full px-2 py-3 rounded-r-md rounded-tl-md"
+        >
           Confirm & Invest
         </button>
       </div>

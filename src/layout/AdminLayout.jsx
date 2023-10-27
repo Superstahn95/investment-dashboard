@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import TopBar from "../components/TopBar";
 import SideBar from "../components/SideBar";
 import { Transition } from "@headlessui/react";
@@ -11,8 +11,11 @@ import {
   ArrowDownTrayIcon,
   CircleStackIcon,
 } from "@heroicons/react/24/solid";
+import { useSelector } from "react-redux";
 
 function AdminLayout() {
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const [showNav, setShowNav] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   function handleResize() {
@@ -24,6 +27,12 @@ function AdminLayout() {
       setIsMobile(false);
     }
   }
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [navigate, user]);
   useEffect(() => {
     if (typeof window != undefined) {
       addEventListener("resize", handleResize);
@@ -33,21 +42,25 @@ function AdminLayout() {
     };
   }, []);
   const adminLinks = [
-    { link: "Dashboard", icon: <HomeIcon className="h-5 w-5" />, to: "/" },
+    {
+      link: "Dashboard",
+      icon: <HomeIcon className="h-5 w-5" />,
+      to: "/dashboard",
+    },
     {
       link: "Manage Users",
       icon: <UserIcon className="h-5 w-5" />,
-      to: "/users",
+      to: "users",
     },
     {
       link: "Manage Deposits",
       icon: <ArrowDownTrayIcon className="h-5 w-5" />,
-      to: "/deposits",
+      to: "deposits",
     },
     {
       link: "Investments",
       icon: <CircleStackIcon className="h-5 w-5" />,
-      to: "/plans",
+      to: "plans",
     },
   ];
 

@@ -1,9 +1,10 @@
 import AdminDashboardHome from "../components/Admin/AdminDashboardHome";
 import ClientDashboardHome from "../components/Client/ClientDashboardHome";
+import { useSelector, useDispatch } from "react-redux";
 
-const userRole = "client";
 function Dashboard() {
-  return userRole === "admin" ? (
+  const { user } = useSelector((state) => state.auth);
+  return user?.role === "admin" ? (
     <AdminDashboardHome />
   ) : (
     <ClientDashboardHome />

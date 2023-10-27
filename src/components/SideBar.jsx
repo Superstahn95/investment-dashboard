@@ -13,11 +13,12 @@ const SideBar = forwardRef(({ showNav, navigationLinks }, ref) => {
   return (
     <div
       ref={ref}
-      className="fixed w-56 h-full bg-white dark:bg-slate-900 shadow-md"
+      className="fixed w-56 h-full bg-white dark:bg-slate-900 shadow-md font-montserrat"
     >
       <div className="flex flex-col pt-20">
         {navigationLinks.map((link) => (
           <NavLink
+            end
             key={link.link}
             to={link.to}
             className={({ isActive, isPending }) =>

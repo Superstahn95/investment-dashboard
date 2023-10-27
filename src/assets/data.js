@@ -177,3 +177,48 @@ export const paymentMethods = [
     network: "trc20",
   },
 ];
+
+export const userDepositHistory = [
+  {
+    id: 1,
+    amount: 200,
+    paymentMode: "Express",
+    approved: true,
+    createdAt: new Date(),
+  },
+  {
+    id: 2,
+    amount: 300,
+    paymentMode: "Express",
+    approved: false,
+    createdAt: new Date(),
+  },
+  {
+    id: 3,
+    amount: 500,
+    paymentMode: "Express",
+    approved: true,
+    createdAt: new Date(),
+  },
+  {
+    id: 4,
+    amount: 100,
+    paymentMode: "Express",
+    approved: true,
+    createdAt: new Date(),
+  },
+  {
+    id: 5,
+    amount: 2000,
+    paymentMode: "Express",
+    approved: false,
+    createdAt: new Date(),
+  },
+  {
+    id: 6,
+    amount: 700,
+    paymentMode: "Express",
+    approved: true,
+    createdAt: new Date(),
+  },
+];

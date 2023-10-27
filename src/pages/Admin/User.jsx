@@ -1,31 +1,73 @@
 import { useState, useEffect, Fragment } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { getUser, reset } from "../../features/user/userSlice";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import { toast, ToastContainer } from "react-toastify";
+import toastifyConfig from "../../utils/toastify";
+import UserDetails from "../../components/Admin/UserDetails";
+import UserInfo from "../../components/Admin/UserInfo";
+import OverlayLoaderComponent from "../../components/OverlayLoaderComponent";
+import FundingModal from "../../components/Admin/FundingModal";
 function User() {
   const { id } = useParams();
-  const [user, setUser] = useState([]);
-  const url = `https://jsonplaceholder.typicode.com/users/${id}`;
-  const getUserDetails = async () => {
-    try {
-      const response = await axios.get(url);
-      setUser(response.data);
-    } catch (error) {
-      console.log(error);
-    }
+  const [user, setUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const closeModal = () => {
+    setShowModal(false);
   };
-  console.log(user);
+  const {
+    singleUser,
+    users,
+    userIsLoading,
+    userError,
+    userSuccess,
+    userSuccessMessage,
+    userErrorMessage,
+  } = useSelector((state) => state.user);
   useEffect(() => {
-    getUserDetails();
+    // setLoading(true);
+    if (!users) {
+      dispatch(getUser());
+      setUser(singleUser);
+      setLoading(false);
+    } else {
+      //we can actually set an action in our redux store to get this done
+      setUser(users.filter((user) => user._id === id)[0]);
+      setLoading(false);
+    }
   }, []);
+  useEffect(() => {
+    if (userError) {
+      //i'll be handling this in a better way
+      toast.error(userErrorMessage, toastifyConfig);
+    }
+    if (userSuccess || userSuccessMessage) {
+      toast.success(userSuccessMessage, toastifyConfig);
+      console.log("Run once");
+    }
+    dispatch(reset());
+    console.log("after dispatching");
+  }, [userError, userSuccess, userSuccessMessage, userErrorMessage, dispatch]);
+
   console.log(user);
+  console.log(users);
+  console.log(id);
+  console.log(singleUser);
+
+  if (loading) {
+    return <OverlayLoaderComponent />;
+  }
   return (
     <>
-      <div className="shadow-lg rounded-lg bg-white dark:bg-slate-800 pt-7 px-4 pb-4">
+      <div className="shadow-lg rounded-lg bg-white dark:bg-slate-800 py-10 px-4 ">
         <div className="flex justify-between items-center">
           <h2 className="text-gray-700 font-bold text-2xl dark:text-white">
-            {user.name}
+            {user?.name}
           </h2>
           {/* button div */}
           <div className="flex items-center space-x-1">
@@ -57,6 +99,7 @@ function User() {
                   <Menu.Item>
                     {({ active }) => (
                       <div
+                        onClick={setShowModal(true)}
                         className={`${
                           active && "bg-orange-100 "
                         } dark:text-white  hover:text-black dark:hover:text-black p-2`}
@@ -74,7 +117,7 @@ function User() {
                         } p-2 hover:text-black dark:hover:text-black dark:text-white`}
                         href="/account-settings"
                       >
-                        Delete {user.name}
+                        Delete {user?.name}
                       </div>
                     )}
                   </Menu.Item>
@@ -84,62 +127,22 @@ function User() {
           </div>
         </div>
         {/* details div */}
-        <div className="grid grid-cols-3 gap-5 border border-black/40 dark:border-white my-4 p-4 text-gray-600 dark:text-white">
-          <div>
-            <p>Account Balance</p>
-            <p>$0.00</p>
-          </div>
-          <div>
-            <p>Profit</p>
-            <p>$0.00</p>
-          </div>
-          <div>
-            <p>Inv. Funds and Returns</p>
-            <p>$0.00</p>
-          </div>
-          <div>
-            <p>Inv. Plans</p>
-            <p>No investment plan</p>
-          </div>
-          <div>
-            <p>User account status</p>
-            <p className="bg-green-400 text-white rounded-2xl w-fit py-1 px-2">
-              Active
-            </p>
-          </div>
-        </div>
+        <UserDetails
+          balance={user.approvedBalance}
+          invFunds={user.investedFundsAndReturns}
+          profit={user.investedFundsAndReturns - user.totalDeposit}
+        />
+
         {/* user information */}
-        <div>
-          <h2 className="text-gray-700 uppercase  text-xl dark:text-white">
-            User Information
-          </h2>
-          <table className="w-full text-gray-600 border border-black/40 dark:border-white dark:text-white my-4">
-            <tbody>
-              {/* can be converted into an object loop if you get what i mean */}
-              <tr className="border-b">
-                <td className="p-2 border-r ">Full Name</td>{" "}
-                <td>{user.name}</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-2 border-r ">Email Address</td>{" "}
-                <td>{user.email}</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-2 border-r ">Phone Number</td>{" "}
-                <td>{user.phone}</td>
-              </tr>
-              <tr className="border-b">
-                <td className="p-2 border-r ">Username</td>{" "}
-                <td>{user.username}</td>
-              </tr>
-              <tr>
-                <td className="p-2 border-r ">Website</td>{" "}
-                <td>{user.website}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <UserInfo
+          email={user.email}
+          name={user.name}
+          number={user.number}
+          registered={user.createdAt}
+          username={user.username}
+        />
       </div>
+      {showModal && <FundingModal closeModal={closeModal} />}
     </>
   );
 }

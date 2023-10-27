@@ -19,7 +19,7 @@ function PlanForm({ initialData, onSubmit }) {
         duration: Yup.number().required("Required"),
       })}
       onSubmit={(values) => {
-        onSubmit(values);
+        onSubmit({ ...values, topUpMode: "percentage", topUpAmount: 40 });
       }}
     >
       <Form>
